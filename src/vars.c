@@ -39,7 +39,7 @@ is_valid_varname(char const *name)
    * You'll most definitely want to use functions from: ctype.h(0P)
    */
   errno = ENOSYS; /* Not implemented */
-  return -1;
+  return 0;
 }
 
 /** Checks if a variable name is a valid XBD name 
@@ -55,7 +55,7 @@ vars_is_valid_varname(char const *name)
   /* TODO: Implement argument validation before tail-calling internal
    * is_valid_varname() function. */
   errno = ENOSYS;
-  return -1;
+  return 0;
 }
 
 /** returns nullptr if not found 

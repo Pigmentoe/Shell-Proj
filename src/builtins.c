@@ -91,9 +91,22 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
   }
   /*TODO: Implement cd with arguments 
    */
+  if(cmd->word_count > 2){
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: too many arguements\n");
+  }
   target_dir = cmd->words[1];
-  return chdir(target_dir);
-  //return 0;
+  
+  if(chdir(target_dir) != 0)
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: %s: %s\n", target_dir, strerror(errno));
+
+  char cwd[1000];
+  if (getcwd(cwd, sizeof(cwd)) != NULL) 
+    vars_set("PWD", cwd);
+  else{
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "pwd failed to update\n");
+    return -1;
+  }
+  return 0;
 }
 
 /** exits smallsh

@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#include<stdio.h>
 #include <signal.h>
 #include <errno.h>
 
@@ -41,9 +42,9 @@ signal_init(void)
    *
    * */
   // Saves old disposition in the third param, otherwise NULL
-  (sigaction(SIGTSTP, &ignore_action, &old_sigtstp) == -1) ? return -1;
-  (sigaction(SIGINT, &ignore_action, &old_sigint) == -1) ? return -1;
-  (sigaction(SIGTTOU, &ignore_action, &old_sigttou) == -1) ? return -1;
+  if(sigaction(SIGTSTP, &ignore_action, &old_sigtstp) == -1) return -1;
+  if(sigaction(SIGINT, &ignore_action, &old_sigint) == -1) return -1;
+  if(sigaction(SIGTTOU, &ignore_action, &old_sigttou) == -1) return -1;
   
   //errno = ENOSYS; /* not implemented */
   return 0;
@@ -60,7 +61,7 @@ signal_enable_interrupt(int sig)
 {
   /* TODO set the signal disposition for signal to interrupt  */
 
-  (sigaction(sig, &interrupt_action, NULL) == -1) ? return -1;
+  if (sigaction(sig, &interrupt_action, NULL) == -1) return -1;
   //errno = ENOSYS; /* not implemented */
   return 0;
 }
@@ -76,7 +77,7 @@ signal_ignore(int sig)
 {
   /* TODO set the signal disposition for signal back to its old state */
   //Does not save old dispostition so 3rd param is NULL
-  (sigaction(sig, &ignore_action, NULL) == -1) ? return -1;
+  if (sigaction(sig, &ignore_action, NULL) == -1) return -1;
 
   //errno = ENOSYS; /* not implemented */
   return 0;
@@ -95,9 +96,9 @@ signal_restore(void)
    * e.g. sigaction(SIGNUM, &saved_old_handler, NULL);
    *
    * */
-  (sigaction(SIGTSTP, &oldsigtstp, NULL) == -1) ? return -1;
-  (sigaction(SIGINT, &oldsigint, NULL) == -1) ? return -1;
-  (sigaction(SIGTTOU, &oldsigttou, NULL) == -1) ? return -1;
+  if (sigaction(SIGTSTP, &old_sigtstp, NULL) == -1) return -1;
+  if (sigaction(SIGINT, &old_sigint, NULL) == -1) return -1;
+  if (sigaction(SIGTTOU, &old_sigttou, NULL) == -1) return -1;
   //errno = ENOSYS; /* not implemented */
   return 0;
 }

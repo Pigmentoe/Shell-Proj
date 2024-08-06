@@ -123,9 +123,15 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     //check if number is valid
     char *str = cmd->words[1];
     int size = strlen(str);
+    int tally = 0;
     for(int i = 0; i < size; i++){
-      if(isdigit((int)str))
+      if(isdigit((int)str[i]))
+        tally++;
     }
+    if(tally != size){
+      
+    }
+
   }
 
 }

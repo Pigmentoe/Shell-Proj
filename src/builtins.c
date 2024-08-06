@@ -91,8 +91,9 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
   }
   /*TODO: Implement cd with arguments 
    */
-  chdir(target_dir);
-  return 0;
+  target_dir = cmd->words[1];
+  return chdir(target_dir);
+  //return 0;
 }
 
 /** exits smallsh
@@ -111,23 +112,27 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
   /* TODO: Set params.status to the appropriate value before exiting */
   //first check that it is not too many arguments
-//   if(cmd->word_count > 2){
-//     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: too many arguements\n");
-//     return -1;
-//   }
-//   if(cmd->word_count == 1){
-//     //get status of last terminated fg cmd
+  if(cmd->word_count > 2){
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: too many arguements\n");
+    return -1;
+  }
+  // if(cmd->word_count == 1){
+  //   //get status of last terminated fg cmd
+  //   
+  // }
 
-    
-//   }
-//   if(cmd->word_count == 2){
-//     //check if number is valid
-//     int number = (int)cmd->words[1];
-//     params.status = number;
-//     }
-//   }
+  if(cmd->word_count == 2){
+    //check if number is valid
+    // char *str = cmd->words[1];
+    // int number = *((int*)str);
+    // params.status = number;
+    char *str;
+    int number =strtol(cmd->words[1], &str, 10);
+    params.status = number;
+    }
+  
 
-// }
+
   bigshell_exit();
   return -1;
 }

@@ -110,6 +110,26 @@ static int
 builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
   /* TODO: Set params.status to the appropriate value before exiting */
+  //first check that it is not too many arguments
+  if(cmd->word_count > 2){
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: too many arguements\n"
+    return -1;
+  }
+  if(cmd->word_count == 1){
+    //get status of last terminated fg cmd
+
+  }
+  if(cmd->word_count == 2){
+    //check if number is valid
+    char *str = cmd->words[1];
+    int size = strlen(str);
+    for(int i = 0; i < size; i++){
+      if(isdigit((int)str))
+    }
+  }
+
+}
+  params.status = [n]
   bigshell_exit();
   return -1;
 }

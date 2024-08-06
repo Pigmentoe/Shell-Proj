@@ -54,8 +54,13 @@ vars_is_valid_varname(char const *name)
 {
   /* TODO: Implement argument validation before tail-calling internal
    * is_valid_varname() function. */
-  errno = ENOSYS;
-  return 0;
+  //Validate
+  if(name[0] == "\0" or name == NULL){
+    errno = ENOSYS;
+    return 0;
+  }
+  //Tail call
+  else is_valid_varname(name);
 }
 
 /** returns nullptr if not found 

@@ -11,3 +11,4 @@ struct params {
  * shell: status ($?) and last bg pid ($!).
  */
 extern struct params params;
+//status is pid number

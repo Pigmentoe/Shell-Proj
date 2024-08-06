@@ -117,25 +117,19 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
   }
   if(cmd->word_count == 1){
     //get status of last terminated fg cmd
-
+    
   }
   if(cmd->word_count == 2){
     //check if number is valid
-    char *str = cmd->words[1];
-    int size = strlen(str);
-    int tally = 0;
-    for(int i = 0; i < size; i++){
-      if(isdigit((int)str[i]))
-        tally++;
-    }
-    if(tally != size){
-      
+    int number = (int)cmd->words[1];
+    params.status = number;
+
     }
 
   }
 
 }
-  params.status = [n]
+
   bigshell_exit();
   return -1;
 }

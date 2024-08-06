@@ -10,6 +10,7 @@ interrupting_signal_handler(int signo)
   /* Its only job is to interrupt system calls--like read()--when
    * certain signals arrive--like Ctrl-C.
    */
+  
 }
 
 static struct sigaction ignore_action = {.sa_handler = SIG_IGN},
@@ -39,7 +40,12 @@ signal_init(void)
    * e.g. sigaction(SIGNUM, &new_handler, &saved_old_handler);
    *
    * */
-  errno = ENOSYS; /* not implemented */
+  // Saves old disposition in the third param, otherwise NULL
+  (sigaction(SIGTSTP, &ignore_action, &old_sigtstp) == -1) ? return -1;
+  (sigaction(SIGINT, &ignore_action, &old_sigint) == -1) ? return -1;
+  (sigaction(SIGTTOU, &ignore_action, &old_sigttou) == -1) ? return -1;
+  
+  //errno = ENOSYS; /* not implemented */
   return 0;
 }
 
@@ -53,7 +59,9 @@ int
 signal_enable_interrupt(int sig)
 {
   /* TODO set the signal disposition for signal to interrupt  */
-  errno = ENOSYS; /* not implemented */
+
+  (sigaction(sig, &interrupt_action, NULL) == -1) ? return -1;
+  //errno = ENOSYS; /* not implemented */
   return 0;
 }
 
@@ -67,7 +75,10 @@ int
 signal_ignore(int sig)
 {
   /* TODO set the signal disposition for signal back to its old state */
-  errno = ENOSYS; /* not implemented */
+  //Does not save old dispostition so 3rd param is NULL
+  (sigaction(sig, &ignore_action, NULL) == -1) ? return -1;
+
+  //errno = ENOSYS; /* not implemented */
   return 0;
 }
 
@@ -84,6 +95,9 @@ signal_restore(void)
    * e.g. sigaction(SIGNUM, &saved_old_handler, NULL);
    *
    * */
-  errno = ENOSYS; /* not implemented */
+  (sigaction(SIGTSTP, &oldsigtstp, NULL) == -1) ? return -1;
+  (sigaction(SIGINT, &oldsigint, NULL) == -1) ? return -1;
+  (sigaction(SIGTTOU, &oldsigttou, NULL) == -1) ? return -1;
+  //errno = ENOSYS; /* not implemented */
   return 0;
 }

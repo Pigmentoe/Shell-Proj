@@ -329,7 +329,7 @@ do_io_redirects(struct command *cmd)
       /* XXX use move_fd() */
     }
     if (0) {
-    err: /* TODO Anything that can fail should jump here. No silent errors!!! */
+    err: /* TODO Anything that can fail should jump here. No silent errors!!! ***Maybe do nothing?*/
       status = -1;
     }
   }

@@ -187,6 +187,7 @@ builtin_unset(struct command *cmd, struct builtin_redir const *redir_list)
 {
   for (size_t i = 1; i < cmd->word_count; ++i) {
     /* TODO: Unset variables */
+    vars_unset(cmd->words[i]);
   }
   return 0;
 }

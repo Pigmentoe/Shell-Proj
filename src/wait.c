@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/wait.h>
+//https://pubs.opengroup.org/onlinepubs/009695399/basedefs/sys/wait.h.html
 #include <unistd.h>
 
 #include "jobs.h"
@@ -22,11 +23,14 @@ wait_on_fg_pgid(pid_t const pgid)
   /* TODO send the "continue" signal to the process group 'pgid'
    * XXX review kill(2)
    */
+   kill(-pgid, SIGCONT);
+   
 
   if (is_interactive) {
     /* TODO make 'pgid' the foreground process group
      * XXX review tcsetpgrp(3) */
   }
+  tcsetpgrp(STDIN_FILENO ,pgid);
 
   /* XXX From this point on, all exit paths must account for setting bigshell
    * back to the foreground process group--no naked return statements */
@@ -55,13 +59,18 @@ wait_on_fg_pgid(pid_t const pgid)
         if (jobs_get_status(jid, &status) < 0) goto err;
         if (WIFEXITED(status)) {
           /* TODO set params.status to the correct value */
+          params.status = WEXITSTATUS(status);
+          //when exiting with a status add 128 bc of ranges of output, 
+          //fixed in Susan's OH
         } else if (WIFSIGNALED(status)) {
           /* TODO set params.status to the correct value */
+          params.status = WTERMSIG(status) + 128;
         }
 
         /* TODO remove the job for this group from the job list
          *  see jobs.h
          */
+        jobs_remove_jid(jid);
         goto out;
       }
       goto err; /* An actual error occurred */
@@ -75,7 +84,7 @@ wait_on_fg_pgid(pid_t const pgid)
     /* TODO handle case where a child process is stopped
      *  The entire process group is placed in the background
      */
-    if (/* TODO */ 0) {
+    if (WIFSTOPPED(status)) {
       fprintf(stderr, "[%jd] Stopped\n", (intmax_t)jid);
       goto out;
     }

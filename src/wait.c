@@ -30,7 +30,7 @@ wait_on_fg_pgid(pid_t const pgid)
     /* TODO make 'pgid' the foreground process group
      * XXX review tcsetpgrp(3) */
   }
-  tcsetpgrp(STDIN_FILENO ,pgid);
+  tcsetpgrp(STDIN_FILENO, pgid);
 
   /* XXX From this point on, all exit paths must account for setting bigshell
    * back to the foreground process group--no naked return statements */
@@ -86,6 +86,9 @@ wait_on_fg_pgid(pid_t const pgid)
      */
     if (WIFSTOPPED(status)) {
       fprintf(stderr, "[%jd] Stopped\n", (intmax_t)jid);
+      if (is_interactive) {
+        tcsetpgrp(STDIN_FILENO, getpgrp());
+      }
       goto out;
     }
 
@@ -104,8 +107,9 @@ out:
      *
      * Note: this will cause bigshell to receive a SIGTTOU signal.
      *       You need to also finish signal.c to have full functionality here.
-     *       Otherwise you bigshell will get stopped.
+     *       Otherwise your bigshell will get stopped.
      */
+    tcsetpgrp(STDIN_FILENO, getpgrp());
   }
   return retval;
 }
@@ -130,9 +134,10 @@ wait_on_bg_jobs()
     for (;;) {
       /* TODO: Modify the following line to wait for process group
        * XXX make sure to do a nonblocking wait!
+       * https://www.ibm.com/docs/en/zos/2.4.0?topic=functions-waitpid-wait-specific-child-process-end
        */
       int status;
-      pid_t pid = waitpid(0, &status, 0);
+      pid_t pid = waitpid(-pgid, &status, WNOHANG);
       if (pid == 0) {
         /* Unwaited children that haven't exited */
         break;

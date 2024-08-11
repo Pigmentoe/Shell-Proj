@@ -37,6 +37,7 @@ is_valid_varname(char const *name)
    *  regex to match: [A-Za-z_][A-Za-z0-9_]*
    *
    * You'll most definitely want to use functions from: ctype.h(0P)
+   * https://man7.org/linux/man-pages/man0/ctype.h.0p.html
    */
   int size = strlen(name);
   int firstchar = (int)name[0];

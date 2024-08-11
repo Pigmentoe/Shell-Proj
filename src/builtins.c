@@ -144,7 +144,7 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     // int number = *((int*)str);
     // params.status = number;
     char *str;
-    int number = strtol(cmd->words[1], &str, 10);
+    long int number = strtol(cmd->words[1], &str, 10);
     if (*str != '\0' || number < 0 || number > 255) {
       dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: invalid exit #\n");
       params.status = 2;

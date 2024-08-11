@@ -105,7 +105,7 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
 
   char cwd[1000];
   if (getcwd(cwd, sizeof(cwd)) != NULL) 
-    vars_set("PWD", cwd);
+    vars_set("$PWD", cwd);
   else{
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "pwd failed to update\n");
     return -1;
@@ -144,10 +144,17 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     // int number = *((int*)str);
     // params.status = number;
     char *str;
-    int number =strtol(cmd->words[1], &str, 10);
-    params.status = number;
+    int number = strtol(cmd->words[1], &str, 10);
+    if (*str != '\0' || number < 0 || number > 255) {
+      dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: invalid exit #\n");
+      params.status = 2;
     }
-  
+    else
+      params.status = (int)number;
+  }
+  // if(cmd->word_count == 1){
+  // do nothing, keep params.status untouched
+  // }
 
 
   bigshell_exit();

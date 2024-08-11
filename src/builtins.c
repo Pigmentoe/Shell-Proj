@@ -152,9 +152,10 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     else
       params.status = (int)number;
   }
-  // if(cmd->word_count == 1){
-  // do nothing, keep params.status untouched
-  // }
+  if(cmd->word_count == 1){
+    //do nothing, keep params.status untouched
+    params.status = 1;
+  }
 
 
   bigshell_exit();

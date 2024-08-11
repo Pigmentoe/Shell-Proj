@@ -42,11 +42,11 @@ is_valid_varname(char const *name)
   int size = strlen(name);
   int firstchar = (int)name[0];
   int second;
-  if(!((isalpha(firstchar)) || name[0] == '_'))
+  if(!((isalpha(name[0])) || name[0] == '_'))
     return 0;
   for(int i = 1; i < size; i++){
     second = (int)name[i];
-    if(!((isalnum(second)) || name[i] == '_'))
+    if(!((isalnum(name[i])) || name[i] == '_'))
       return 0;
   }
   //errno = ENOSYS; /* Not implemented */

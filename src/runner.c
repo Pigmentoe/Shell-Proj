@@ -43,7 +43,13 @@ expand_command_words(struct command *cmd)
     expand(&cmd->words[i]);
   }
   /* TODO Assignment values */
+  for (size_t i = 0; i < cmd->assignment_count; i++) {
+    expand(&cmd->assignments[i]->value);
+  }
   /* TODO I/O Filenames */
+  for (size_t i = 0; i < cmd->io_redir_count; i++) {
+    expand(&cmd->io_redirs[i]->filename);
+  }
   return 0;
 }
 
@@ -61,7 +67,11 @@ do_variable_assignment(struct command const *cmd, int export_all)
   for (size_t i = 0; i < cmd->assignment_count; ++i) {
     struct assignment *a = cmd->assignments[i];
     /* TODO Assign */
-    /* TODO Export (if export_all != 0) */
+    vars_set(a->name, a->value);
+    /* TODO Export (if export_all != 0) */\
+    //Unassigned atm
+    if (export_all == 0) 
+      vars_export(a->name);
   }
   return 0;
 }
@@ -101,20 +111,20 @@ get_io_flags(enum io_operator io_op)
   switch (io_op) {
     case OP_LESSAND: /* <& */
     case OP_LESS:    /* < */
-      flags = 0;     /* TODO */
+      flags = O_RDONLY;     /* TODO */
       break;
     case OP_GREATAND: /* >& */
     case OP_GREAT:    /* > */
-      flags = 0;      /* TODO */
+      flags = O_WRONLY | O_CREAT | O_EXCL;      /* TODO */
       break;
     case OP_DGREAT: /* >> */
-      flags = 0;    /* TODO */
+      flags = O_WRONLY | O_CREAT | O_APPEND;    /* TODO */
       break;
     case OP_LESSGREAT: /* <> */
-      flags = 0;       /* TODO */
+      flags = O_RDWR | O_CREAT ;       /* TODO */
       break;
     case OP_CLOBBER: /* >| */
-      flags = 0;     /* TODO */
+      flags = O_WRONLY | O_CREAT | O_TRUNC;     /* TODO */
       break;
   }
   return flags;
@@ -133,9 +143,12 @@ get_io_flags(enum io_operator io_op)
 static int
 move_fd(int src, int dst)
 {
+  //if already the same then don't proceed
   if (src == dst) return dst;
   /* TODO move src to dst */
+  if(dup2(src, dst) == -1) return -1;
   /* TODO close src */
+  if(close(src) == -1) return -1;
   return dst;
 }
 
@@ -285,6 +298,7 @@ do_io_redirects(struct command *cmd)
          *
          * XXX What is n? Look for it in `struct io_redir->???` (parser.h)
          */
+        close(r->io_number);
       } else {
         /* The filename is interpreted as a file descriptor number to
          * redirect to. For example, 2>&1 duplicates file descriptor 1
@@ -305,7 +319,9 @@ do_io_redirects(struct command *cmd)
             && src <= INT_MAX /* <--- this is *critical* bounds checking when
                                  downcasting */
         ) {
-          /* TODO duplicate src to dst. */
+          /* TODO duplicate src to dst. if fail jump to err */
+          if(dup2((int)src, r->io_number) < 0)
+            goto err;
         } else {
           /* XXX Syntax error--(not a valid number)--we can "recover" by
            * attempting to open a file instead. That's what bash does.
@@ -324,9 +340,12 @@ do_io_redirects(struct command *cmd)
        * XXX Note: you can supply a mode to open() even if you're not creating a
        * file. it will just ignore that argument.
        */
-
+      int fd = open(r->filename, flags, 0777);
+      if (fd < 0) goto err;
       /* TODO Move the opened file descriptor to the redirection target */
       /* XXX use move_fd() */
+      if(move_fd(fd, r->io_number) < 0)
+        goto err;
     }
     if (0) {
     err: /* TODO Anything that can fail should jump here. No silent errors!!! ***Maybe do nothing?*/
@@ -386,7 +405,7 @@ run_command_list(struct command_list *cl)
      * [TODO] Update upstream_pipefd initializer to get the (READ) side of the
      *        pipeline saved from the previous command
      */
-    int const upstream_pipefd = -1;
+    int const upstream_pipefd = pipeline_data.pipe_fd;
     int const has_upstream_pipe = (upstream_pipefd >= 0);
 
     /* If the current command is a pipeline command, create a new pipe on
@@ -398,6 +417,7 @@ run_command_list(struct command_list *cl)
      * next command to use.
      *
      * See PIPE(2) for the function to call.
+     * https://man7.org/linux/man-pages/man2/pipe.2.html
      *
      * Note that the initialized values of -1 should be kept if no pipe is
      * created. They indicate the lack of a pipe.
@@ -407,6 +427,8 @@ run_command_list(struct command_list *cl)
      * [TODO] Handle errors that occur
      */
     int pipe_fds[2] = {-1, -1};
+    if(pipe(pipe_fds) < 0)
+      goto err;
 
     /* Grab the WRITE side of the pipeline we just created */
     int const downstream_pipefd = pipe_fds[STDOUT_FILENO];
@@ -429,9 +451,19 @@ run_command_list(struct command_list *cl)
      * [TODO] Re-assign child_pid to the new process id
      * [TODO] Handle errors if they occur
      */
-    int const did_fork = 0; /* TODO */
+    int did_fork = 0; /* TODO */
+    if(!is_builtin || !is_fg){
+      //Return -1 for errors, 0 to the new process, 
+      //and the process ID of the new process to the old process
+      child_pid = fork();
+      if(child_pid < 0)
+        goto err;
+      did_fork = 1;
+    }
     if (did_fork) {
       /* [TODO] fork */
+    
+
 
       /* All of the processes in a pipeline (or single command) belong to the
        * same process group. This is how the shell manages job control. We will
@@ -518,6 +550,7 @@ run_command_list(struct command_list *cl)
          *
          * [TODO] move downstream_pipefd to STDOUT_FILENO if it's valid
          */
+
 
         /* Now handle the remaining redirect operators from the command. */
         if (do_io_redirects(cmd) < 0) err(1, 0);

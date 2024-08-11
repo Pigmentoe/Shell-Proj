@@ -93,11 +93,15 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
    */
   if(cmd->word_count > 2){
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: too many arguements\n");
+    return -1;
   }
-  target_dir = cmd->words[1];
+  if(cmd->word_count == 2)
+    target_dir = cmd->words[1];
   
-  if(chdir(target_dir) != 0)
+  if(chdir(target_dir) != 0){
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: %s: %s\n", target_dir, strerror(errno));
+    return -1;
+  }
 
   char cwd[1000];
   if (getcwd(cwd, sizeof(cwd)) != NULL) 

@@ -452,7 +452,7 @@ run_command_list(struct command_list *cl)
      * [TODO] Handle errors if they occur
      */
     int const did_fork = (!is_builtin || !is_fg); /* TODO */
-    //if(!is_builtin || !is_fg){
+
       //Return -1 for errors, 0 to the new process, 
       //and the process ID of the new process to the old process
       
@@ -585,6 +585,7 @@ run_command_list(struct command_list *cl)
          *  XXX Note: cmd->words is a null-terminated array of strings. Nice!
          */
         
+        //cmd->words is null terminated
         execvp(cmd->words[0], cmd->words);
 
 

@@ -451,18 +451,17 @@ run_command_list(struct command_list *cl)
      * [TODO] Re-assign child_pid to the new process id
      * [TODO] Handle errors if they occur
      */
-    int did_fork = 0; /* TODO */
-    if(!is_builtin || !is_fg){
+    int const did_fork = (!is_builtin || !is_fg); /* TODO */
+    //if(!is_builtin || !is_fg){
       //Return -1 for errors, 0 to the new process, 
       //and the process ID of the new process to the old process
+      
+    
+    if (did_fork) {
+      /* [TODO] fork */
       child_pid = fork();
       if(child_pid < 0)
         goto err;
-      did_fork = 1;
-    }
-    if (did_fork) {
-      /* [TODO] fork */
-    
       //execvp(cmd->words[0], cmd->words);
     //exec for running external programs
 
@@ -557,9 +556,9 @@ run_command_list(struct command_list *cl)
          * [TODO] move downstream_pipefd to STDOUT_FILENO if it's valid
          */
         
-        if(STDIN_FILENO != -1)
+        if(has_upstream_pipe)
           move_fd(upstream_pipefd, STDIN_FILENO);
-        if(STDOUT_FILENO != -1)
+        if(has_downstream_pipe)
           move_fd(downstream_pipefd, STDOUT_FILENO);
 
 

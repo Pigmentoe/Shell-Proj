@@ -49,6 +49,8 @@ wait_on_fg_pgid(pid_t const pgid)
     /* Wait on ALL processes in the process group 'pgid' */
     // Access all processes in the group with -pgid
     int status;
+    //https://www.ibm.com/docs/en/zos/2.4.0?topic=functions-waitpid-wait-specific-child-process-end
+    //States WIFSTOPPED can only happen after waitpid with WUNTRACED
     pid_t res = waitpid(/* TODO */ -pgid, &status, WUNTRACED);
     if (res < 0) {
       /* Error occurred (some errors are ok, see below)

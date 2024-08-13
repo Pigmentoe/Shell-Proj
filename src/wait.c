@@ -29,8 +29,9 @@ wait_on_fg_pgid(pid_t const pgid)
   if (is_interactive) {
     /* TODO make 'pgid' the foreground process group
      * XXX review tcsetpgrp(3) */
+    tcsetpgrp(STDIN_FILENO, pgid);
   }
-  tcsetpgrp(STDIN_FILENO, pgid);
+  
 
   /* XXX From this point on, all exit paths must account for setting bigshell
    * back to the foreground process group--no naked return statements */

@@ -47,8 +47,9 @@ wait_on_fg_pgid(pid_t const pgid)
    */
   for (;;) {
     /* Wait on ALL processes in the process group 'pgid' */
+    // Access all processes in the group with -pgid
     int status;
-    pid_t res = waitpid(/* TODO */ -pgid, &status, 0);
+    pid_t res = waitpid(/* TODO */ -pgid, &status, WUNTRACED);
     if (res < 0) {
       /* Error occurred (some errors are ok, see below)
        *

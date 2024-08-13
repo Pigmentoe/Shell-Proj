@@ -426,9 +426,11 @@ run_command_list(struct command_list *cl)
      * [TODO] Handle errors that occur
      */
     int pipe_fds[2] = {-1, -1};
-    if(pipe(pipe_fds) < 0)
-      goto err;
-
+    //VERY IMPORTANT, only call pipe() when in a pipeline
+    if(is_pl){
+      if(pipe(pipe_fds) < 0)
+        goto err;
+    }
     /* Grab the WRITE side of the pipeline we just created */
     int const downstream_pipefd = pipe_fds[STDOUT_FILENO];
     int const has_downstream_pipe = (downstream_pipefd >= 0);
@@ -458,9 +460,9 @@ run_command_list(struct command_list *cl)
     
     if (did_fork) {
       /* [TODO] fork */
-      // child_pid = fork();
-      // if(child_pid < 0)
-      //   goto err;
+      child_pid = fork();
+      if(child_pid < 0)
+        goto err;
 
     //exec for running external programs
 

@@ -463,6 +463,12 @@ run_command_list(struct command_list *cl)
     if (did_fork) {
       /* [TODO] fork */
     
+      //execvp(cmd->words[0], cmd->words);
+    //exec for running external programs
+
+    //fork creates perfect copy of running program
+
+    //child calls exec to take other programs spot.
 
 
       /* All of the processes in a pipeline (or single command) belong to the
@@ -550,6 +556,11 @@ run_command_list(struct command_list *cl)
          *
          * [TODO] move downstream_pipefd to STDOUT_FILENO if it's valid
          */
+        
+        if(STDIN_FILENO != -1)
+          move_fd(upstream_pipefd, STDIN_FILENO);
+        if(STDOUT_FILENO != -1)
+          move_fd(downstream_pipefd, STDOUT_FILENO);
 
 
         /* Now handle the remaining redirect operators from the command. */
@@ -574,6 +585,9 @@ run_command_list(struct command_list *cl)
          *
          *  XXX Note: cmd->words is a null-terminated array of strings. Nice!
          */
+        
+        execvp(cmd->words[0], cmd->words);
+
 
         err(127, 0); /* Exec failure -- why might this happen? */
         assert(0);   /* UNREACHABLE -- This should never be reached ABORT! */

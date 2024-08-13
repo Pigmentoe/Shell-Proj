@@ -156,7 +156,8 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
   //   //do nothing, keep params.status untouched
   //   params.status = 1;
   // }
-  dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "%d\n", params.status);
+  /*Testing printf*/
+  //dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "%d\n", params.status);
 
   bigshell_exit();
   return -1;

@@ -105,7 +105,7 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
 
   char cwd[1000];
   if (getcwd(cwd, sizeof(cwd)) != NULL) 
-    vars_set("$PWD", cwd);
+    vars_set("PWD", cwd);
   else{
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "pwd failed to update\n");
     return -1;

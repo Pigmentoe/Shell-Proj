@@ -68,9 +68,8 @@ do_variable_assignment(struct command const *cmd, int export_all)
     struct assignment *a = cmd->assignments[i];
     /* TODO Assign */
     vars_set(a->name, a->value);
-    /* TODO Export (if export_all != 0) */\
-    //Unassigned atm
-    if (export_all == 0) 
+    /* TODO Export (if export_all != 0) */
+    if (export_all != 0) 
       vars_export(a->name);
   }
   return 0;
@@ -111,7 +110,7 @@ get_io_flags(enum io_operator io_op)
   switch (io_op) {
     case OP_LESSAND: /* <& */
     case OP_LESS:    /* < */
-      flags = O_RDONLY;     /* TODO */
+      flags = O_RDONLY;                         /* TODO */
       break;
     case OP_GREATAND: /* >& */
     case OP_GREAT:    /* > */
@@ -121,7 +120,7 @@ get_io_flags(enum io_operator io_op)
       flags = O_WRONLY | O_CREAT | O_APPEND;    /* TODO */
       break;
     case OP_LESSGREAT: /* <> */
-      flags = O_RDWR | O_CREAT ;       /* TODO */
+      flags = O_RDWR | O_CREAT;                 /* TODO */
       break;
     case OP_CLOBBER: /* >| */
       flags = O_WRONLY | O_CREAT | O_TRUNC;     /* TODO */
@@ -459,10 +458,10 @@ run_command_list(struct command_list *cl)
     
     if (did_fork) {
       /* [TODO] fork */
-      child_pid = fork();
-      if(child_pid < 0)
-        goto err;
-      //execvp(cmd->words[0], cmd->words);
+      // child_pid = fork();
+      // if(child_pid < 0)
+      //   goto err;
+
     //exec for running external programs
 
     //fork creates perfect copy of running program
@@ -505,7 +504,7 @@ run_command_list(struct command_list *cl)
         /* Set up the redir_list for virtual redirection */
         struct builtin_redir *redir_list = 0;
 
-        if (upstream_pipefd >= 0) {
+        if (has_upstream_pipe) {
           struct builtin_redir *rec = malloc(sizeof *rec);
           if (!rec) goto err;
           rec->pseudofd = STDIN_FILENO;
@@ -513,7 +512,7 @@ run_command_list(struct command_list *cl)
           rec->next = redir_list;
           redir_list = rec;
         }
-        if (downstream_pipefd >= 0) {
+        if (has_downstream_pipe) {
           struct builtin_redir *rec = malloc(sizeof *rec);
           if (!rec) goto err;
           rec->pseudofd = STDOUT_FILENO;

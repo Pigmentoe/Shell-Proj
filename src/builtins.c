@@ -1,4 +1,4 @@
-Collaborator: Carter Boyles
+//Collaborator: Carter Boyles
 #define _POSIX_C_SOURCE 200809L
 #include <errno.h>
 #include <limits.h>

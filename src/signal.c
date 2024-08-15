@@ -34,6 +34,7 @@ static struct sigaction ignore_action = {.sa_handler = SIG_IGN},
  *
  * Saves old signal dispositions for a later call to signal_restore()
  */
+/*Make sure to comment out all errnos once function is implemented*/
 int
 signal_init(void)
 {

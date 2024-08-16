@@ -23,6 +23,8 @@ wait_on_fg_pgid(pid_t const pgid)
   /* Make sure the foreground group is running */
   /* TODO send the "continue" signal to the process group 'pgid'
    * XXX review kill(2)
+   * remember that the minus means every process in a process group
+   * module 5 (Ryan Gambord, 2024)
    */
    kill(-pgid, SIGCONT);
    
@@ -88,6 +90,8 @@ wait_on_fg_pgid(pid_t const pgid)
 
     /* TODO handle case where a child process is stopped
      *  The entire process group is placed in the background
+     * WIFSTOPPED from library, when child is stopped - true
+     * analyzed tcsetpgrp page and implementation below
      */
     if (WIFSTOPPED(status)) {
       fprintf(stderr, "[%jd] Stopped\n", (intmax_t)jid);
@@ -140,6 +144,7 @@ wait_on_bg_jobs()
       /* TODO: Modify the following line to wait for process group
        * XXX make sure to do a nonblocking wait!
        * https://www.ibm.com/docs/en/zos/2.4.0?topic=functions-waitpid-wait-specific-child-process-end
+       * target every process in a process group and non blocking!!
        */
       int status;
       pid_t pid = waitpid(-pgid, &status, WNOHANG);

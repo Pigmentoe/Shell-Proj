@@ -92,18 +92,22 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
   }
   /*TODO: Implement cd with arguments 
    */
+  /* Should only input cd and directory to go to: cd ___ */
   if(cmd->word_count > 2){
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: too many arguements\n");
     return -1;
   }
+  /*Valid input*/
   if(cmd->word_count == 2)
     target_dir = cmd->words[1];
-  
+
+  /*Ensure success*/
   if(chdir(target_dir) != 0){
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: %s: %s\n", target_dir, strerror(errno));
     return -1;
   }
 
+  /*Update PWD variable, needed to pass many tests*/
   char cwd[1000];
   if (getcwd(cwd, sizeof(cwd)) != NULL) 
     vars_set("PWD", cwd);
@@ -146,6 +150,7 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     // params.status = number;
     char *str;
     long int number = strtol(cmd->words[1], &str, 10);
+    /*Exit can only be between 0 and 255*/
     if (*str != '\0' || number < 0 || number > 255) {
       dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: invalid exit #\n");
       params.status = 2;

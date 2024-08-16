@@ -68,6 +68,7 @@ do_variable_assignment(struct command const *cmd, int export_all)
   for (size_t i = 0; i < cmd->assignment_count; ++i) {
     struct assignment *a = cmd->assignments[i];
     /* TODO Assign */
+    /*Using vars.h function*/
     vars_set(a->name, a->value);
     /* TODO Export (if export_all != 0) */
     if (export_all != 0) 
@@ -107,6 +108,7 @@ get_io_flags(enum io_operator io_op)
    *
    * based on: Redirection. Shell Command Language. Shell & Utilities.
    * POSIX 1.2008
+   * ensure ones have multiple flags, flags from (Ryan Gambord, 2024)
    */
   switch (io_op) {
     case OP_LESSAND: /* <& */
@@ -143,6 +145,7 @@ get_io_flags(enum io_operator io_op)
 static int
 move_fd(int src, int dst)
 {
+  /*Example code provided in module 5 text*/
   //if already the same then don't proceed
   if (src == dst) return dst;
   /* TODO move src to dst */
@@ -279,6 +282,7 @@ do_builtin_io_redirects(struct command *cmd, struct builtin_redir **redir_list)
  * itself. Iterate over the list of redirections and apply each one in sequence.
  *
  * TODO
+ * iterate over redirections
  */
 static int
 do_io_redirects(struct command *cmd)
@@ -311,6 +315,7 @@ do_io_redirects(struct command *cmd)
          *
          *     You'll probably want to use this exact code again elsewhere in
          *     this project...
+         * strtol also used in builtins() after researching
          */
         char *end = r->filename;
         long src = strtol(r->filename, &end, 10);

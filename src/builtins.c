@@ -94,7 +94,7 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
    */
   /* Should only input cd and directory to go to: cd ___ */
   if(cmd->word_count > 2){
-    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: too many arguements\n");
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: too many arguements\n");
     return -1;
   }
   /*Valid input*/
@@ -103,16 +103,18 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
 
   /*Ensure success*/
   if(chdir(target_dir) != 0){
-    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: %s: %s\n", target_dir, strerror(errno));
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: failed to change directory");
     return -1;
   }
 
   /*Update PWD variable, needed to pass many tests*/
   char cwd[1000];
+  /*Returns NULL on success*/
   if (getcwd(cwd, sizeof(cwd)) != NULL) 
     vars_set("PWD", cwd);
+  /*Failure to get current working directory*/
   else{
-    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "pwd failed to update\n");
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: pwd failed to update\n");
     return -1;
   }
   return 0;
@@ -153,6 +155,9 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     /*Exit can only be between 0 and 255*/
     if (*str != '\0' || number < 0 || number > 255) {
       dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "error: invalid exit #\n");
+      /* 2 signifies incorrect usage of built-in:
+      * https://www.baeldung.com/linux/status-codes#:~:text=Exit%20code%202%20signifies%20invalid,t%20exist%20or%20requires%20permissions.
+      */
       params.status = 2;
     }
     else

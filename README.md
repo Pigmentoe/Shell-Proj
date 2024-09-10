@@ -74,6 +74,7 @@ Overall, the BigShell project has been a cornerstone experience in my C journey.
 
 
 REFERENCES
+
 [1]	R. Gambord, "BigShell Specification," Operating Systems I [Online], August 8 2024. Available: https://rgambord.github.io/cs374/assignments/bigshell/
 
 [2]	IEEE Standard for Information Technology - Portable Operating System Interface (POSIX(R)), IEEE Std 1003.1-2008. doi: 10.1109/IEEESTD.2008.4694976.

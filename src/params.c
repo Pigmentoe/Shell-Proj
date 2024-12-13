@@ -1,4 +1,4 @@
-/* XXX DO NOT MODIFY THIS FILE XXX */
+/* XXX DNM XXX */
 #include <errno.h>
 #include <unistd.h>
 

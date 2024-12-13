@@ -1,4 +1,4 @@
-/* XXX DO NOT MODIFY THIS FILE XXX */
+/* XXX DNM XXX */
 #define _POSIX_C_SOURCE 200809
 #include <err.h>
 #include <errno.h>

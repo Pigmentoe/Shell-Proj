@@ -1,4 +1,4 @@
-/* XXX DO NOT MODIFY THIS FILE XXX
+/* XXX DNM XXX
  *
  * This code handles all variable and other expansions that a shell is supposed
  * to do, for you. Refer to expand.h for the interface.
